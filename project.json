@@ -1,11 +1,11 @@
 {
- "name": "es2log",
- "description": "Enter your project description",
+ "name": "estool",
+ "description": "ES Log Export Tool",
  "author": {
-  "name": "m",
-  "email": "m"
+  "name": "ushell",
+  "url": ""
  },
- "version": "0.1.0",
+ "version": "v1.0.0",
  "binaryname": "estool",
  "frontend": {
   "dir": "frontend",
@@ -14,7 +14,7 @@
   "bridge": "src",
   "serve": "npm run serve"
  },
- "tags": "",
+ "tags": "v1.0.0",
  "WailsVersion": "",
  "CrossCompile": false,
  "Platform": "",

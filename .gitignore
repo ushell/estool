@@ -3,3 +3,6 @@ vendor
 .git
 main-mewn.go
 build
+internal/cmd/client.go
+.idea
+go.sum

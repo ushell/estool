@@ -1,4 +1,4 @@
-module es2log
+module estool
 
 go 1.15
 

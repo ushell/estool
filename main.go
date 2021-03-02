@@ -4,7 +4,7 @@ import (
   "github.com/leaanthony/mewn"
   "github.com/wailsapp/wails"
 
-  "es2log/internal/ui"
+  "estool/internal/backend"
 )
 
 func main() {
@@ -17,12 +17,12 @@ func main() {
   app := wails.CreateApp(&wails.AppConfig{
     Width:  1024,
     Height: 568,
-    Title:  "ESTool",
+    Title:  "ESTool v1.0.0",
     JS:     js,
     CSS:    css,
   })
 
-  app.Bind(ui.NewApp())
+  app.Bind(backend.NewApp())
 
   app.Run()
 }

@@ -107,10 +107,19 @@
                 this.queryForm.query.index = this.queryForm.index ;
                 this.queryForm.query.match = JSON.parse(this.queryForm.json);
 
-                this.queryForm.query.start_date = this.queryForm.date_range[0].toISOString().split('T')[0];
-                this.queryForm.query.end_date = this.queryForm.date_range[1].toISOString().split('T')[1];
 
-                console.log("=> ", this.queryForm.query);
+                let sDate = this.queryForm.date_range[0];
+                let eDate = this.queryForm.date_range[1];
+
+                // fix timezone
+                const offset = sDate.getTimezoneOffset();
+                sDate = new Date(sDate.getTime() - (offset*60*1000));
+                eDate = new Date(eDate.getTime() - (offset*60*1000));
+
+                this.queryForm.query.start_date = sDate.toISOString().split('T')[0];
+                this.queryForm.query.end_date = eDate.toISOString().split('T')[0];
+
+                console.log("form: ", this.queryForm.query);
 
                 let self = this;
                 window.backend.App.Search(this.queryForm).then(function(r) {
@@ -139,9 +148,9 @@
                 let self = this;
                 window.backend.App.Download(this.downloadObj).then(function(r) {
                     console.log(r)
-
                     if (r.code === 0) {
-                        self.$Message.success("导出数据成功")
+                        self.$Message.success("导出数据成功");
+                        self.$Message.success({content: "文件保存路径: " + r.data.Data.filename, duration: 10, closable: true});
                     } else {
                         self.$Message.warning({ content: r.message, duration: 5, closable: true});
                     }

@@ -1,8 +1,8 @@
-package ui
+package backend
 
 import (
 	"encoding/json"
-	"es2log/internal/elasticsearch"
+	"estool/internal/elasticsearch"
 	"fmt"
 )
 
@@ -10,8 +10,8 @@ type App struct {}
 
 type Form struct {
 	Url string `json:"url"`
-	AuthUser string `json:"auth_user"`
-	AuthPassword string `json:"auth_password"`
+	AuthUser string `json:"auth_user,omitempty"`
+	AuthPassword string `json:"auth_password,omitempty"`
 	Query elasticsearch.Query `json:"query"`
 	Filename string `json:"filename,omitempty"`
 }
@@ -48,12 +48,12 @@ func (*App) Search(obj map[string]interface{}) Response {
 func (*App) Download(obj map[string]interface{}) Response {
 	f, err := parseForm(obj)
 	if err != nil {
-		return Response{Code:1, Message: err.Error()}
+		return Response{Code:-1, Message: err.Error()}
 	}
 
 	err = elasticsearch.Init(f.Url, f.AuthUser, f.AuthPassword)
 	if err != nil {
-		return Response{Code:-1, Message: err.Error()}
+		return Response{Code:1, Message: err.Error()}
 	}
 
 	r, err := elasticsearch.Download(f.Query)
@@ -78,4 +78,6 @@ func parseForm(obj map[string]interface{}) (Form, error) {
 	if err != nil {
 		return f, err
 	}
+
+	return f, nil
 }
