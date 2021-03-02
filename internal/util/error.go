@@ -3,7 +3,7 @@ package util
 import "encoding/json"
 
 type Err struct {
-	Code int
+	Code    int
 	Message string
 }
 
@@ -14,7 +14,7 @@ func (e *Err) Error() string {
 
 func NewError(code int, message string) error {
 	return &Err{
-		Code: code,
+		Code:    code,
 		Message: message,
 	}
 }

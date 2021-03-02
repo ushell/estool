@@ -3,12 +3,12 @@
  "description": "ES Log Export Tool",
  "author": {
   "name": "ushell",
-  "url": ""
+  "url": "github.com/ushell/estool"
  },
  "version": "v1.0.0",
  "binaryname": "estool",
  "frontend": {
-  "dir": "frontend",
+  "dir": "ui",
   "install": "npm install",
   "build": "npm run build",
   "bridge": "src",

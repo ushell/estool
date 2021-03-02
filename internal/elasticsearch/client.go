@@ -13,22 +13,22 @@ import (
 )
 
 type Client struct {
-	Version int
+	Version  int
 	Instance *es7.Client
 }
 
 type Result struct {
-	Hit int
+	Hit      int
 	CostTime string
-	Data map[string]interface{}
+	Data     map[string]interface{}
 }
 
 type Query struct {
-	Index string `json:"index"`
-	StartDate string `json:"start_date"`
-	EndDate string `json:"end_date"`
-	Match map[string]interface{} `json:"match"`
-	Field string `json:"field"`
+	Index     string                 `json:"index"`
+	StartDate string                 `json:"start_date"`
+	EndDate   string                 `json:"end_date"`
+	Match     map[string]interface{} `json:"match"`
+	Field     string                 `json:"field"`
 }
 
 var _c Client
@@ -45,8 +45,8 @@ func NewClient(url string, username string, password string) (Client, error) {
 		Addresses: []string{
 			url,
 		},
-		Username: username,
-		Password: password,
+		Username:  username,
+		Password:  password,
 		Transport: tp,
 	}
 
@@ -76,7 +76,7 @@ func Fetch(index string, q map[string]interface{}, isFetch bool) (Result, error)
 		return r, util.NewError(-1, fmt.Sprintf("Error encoding query: %s", err.Error()))
 	}
 
-	fmt.Println("[*] query => ", buf.String())
+	//fmt.Println("[*] query => ", buf.String())
 
 	res, err := _c.Instance.Search(
 		_c.Instance.Search.WithContext(context.Background()),

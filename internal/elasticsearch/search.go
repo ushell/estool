@@ -21,7 +21,7 @@ func Search(q Query) (Result, error) {
 					"range": map[string]interface{}{
 						"@timestamp": map[string]string{
 							"gte": q.StartDate,
-							"lt": q.EndDate,
+							"lt":  q.EndDate,
 						},
 					},
 				},

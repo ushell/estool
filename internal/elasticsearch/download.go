@@ -10,7 +10,7 @@ import (
 
 func Download(q Query) (Result, error) {
 	var (
-		r Result
+		r        Result
 		filename string
 	)
 
@@ -30,7 +30,7 @@ func Download(q Query) (Result, error) {
 					"range": map[string]interface{}{
 						"@timestamp": map[string]string{
 							"gte": q.StartDate,
-							"lt": q.EndDate,
+							"lt":  q.EndDate,
 						},
 					},
 				},
@@ -85,7 +85,7 @@ func saveToFile(r map[string]interface{}, field string, filename string) (string
 		return "", nil
 	}
 
-	lastHit := hitList[len(hitList) - 1]
+	lastHit := hitList[len(hitList)-1]
 
 	s := lastHit.(map[string]interface{})["sort"]
 	sortFlag := s.([]interface{})[0].(string)
@@ -113,8 +113,8 @@ func saveToFile(r map[string]interface{}, field string, filename string) (string
 		sortMap[k] = data
 		sortKey = append(sortKey, k)
 	}
-	// order by timestamp
-	sort.Slice(sortKey, func (i, j int) bool {
+
+	sort.Slice(sortKey, func(i, j int) bool {
 		return sortKey[i] < sortKey[j]
 	})
 
