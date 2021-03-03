@@ -1,6 +1,7 @@
 package elasticsearch
 
 import (
+	"math/rand"
 	"os"
 	"sort"
 	"time"
@@ -16,6 +17,9 @@ func Download(q Query) (Result, error) {
 
 	if q.Index == "" {
 		return r, util.NewError(-1, "index is empty")
+	}
+	if q.Field == "" {
+		q.Field = "message"
 	}
 
 	filename = util.GetDownloadFilename("")
@@ -39,7 +43,8 @@ func Download(q Query) (Result, error) {
 		"size": PageSize,
 		"sort": [1]map[string]string{
 			0: {
-				"_id": "asc",
+				"_id":        "asc",
+				"@timestamp": "asc",
 			},
 		},
 	}
@@ -54,16 +59,16 @@ func Download(q Query) (Result, error) {
 			break
 		}
 
-		sort, err := saveToFile(r.Data, q.Field, filename)
+		s, err := saveToFile(r.Data, q.Field, filename)
 		if err != nil {
 			return r, err
 		}
 
-		if sort == "" {
+		if len(s) == 0 {
 			break
 		}
 
-		query["search_after"] = []string{sort}
+		query["search_after"] = s
 	}
 
 	r.Data = make(map[string]interface{})
@@ -72,43 +77,44 @@ func Download(q Query) (Result, error) {
 	return r, nil
 }
 
-func saveToFile(r map[string]interface{}, field string, filename string) (string, error) {
+func saveToFile(r map[string]interface{}, field string, filename string) ([]interface{}, error) {
+	var sortFlag []interface{}
+
 	f, err := os.OpenFile(filename, os.O_APPEND|os.O_CREATE|os.O_RDWR, 0644)
 	defer f.Close()
 
 	if err != nil {
-		return "", err
+		return sortFlag, err
 	}
 
 	hitList := r["hits"].(map[string]interface{})["hits"].([]interface{})
 	if len(hitList) == 0 {
-		return "", nil
+		return sortFlag, nil
 	}
 
 	lastHit := hitList[len(hitList)-1]
-
-	s := lastHit.(map[string]interface{})["sort"]
-	sortFlag := s.([]interface{})[0].(string)
+	sortFlag = lastHit.(map[string]interface{})["sort"].([]interface{})
 
 	sortMap := make(map[int64]interface{}, len(hitList))
 	var sortKey []int64
 
-	if field == "" {
-		field = "message"
-	}
-
-	for _, hit := range hitList {
+	for i, hit := range hitList {
 		source := hit.(map[string]interface{})["_source"]
 		data := source.(map[string]interface{})[field]
-
 		if data == nil {
-			return "", util.NewError(1, "`"+field+"` not exists")
+			return sortFlag, util.NewError(1, "`"+field+"` not exists")
 		}
 
 		timestamp := source.(map[string]interface{})["@timestamp"]
 		t, _ := time.Parse(time.RFC3339Nano, timestamp.(string))
 
 		k := t.UnixNano() / 1000000
+
+		rand.Seed(int64(i))
+
+		if _, ok := sortMap[k]; ok {
+			k = k + int64(rand.Intn(1000))
+		}
 
 		sortMap[k] = data
 		sortKey = append(sortKey, k)
@@ -119,8 +125,7 @@ func saveToFile(r map[string]interface{}, field string, filename string) (string
 	})
 
 	for _, k := range sortKey {
-		data := sortMap[k]
-		f.WriteString(data.(string) + "\n")
+		f.WriteString(sortMap[k].(string) + "\n")
 	}
 
 	return sortFlag, nil
